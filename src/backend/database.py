@@ -166,13 +166,13 @@ initial_activities = {
     },
     "Manga Maniacs": {
         "description": "Dive into epic adventures, emotional journeys, and unforgettable heroes from the world of Japanese Manga! Whether you're a seasoned otaku or just discovering the art form, join us to read, discuss, and celebrate the best graphic novels Japan has to offer.",
-        "schedule": "Tuesdays, 7:00 PM",
+        "schedule": "Tuesdays, 5:00 PM",
         "schedule_details": {
             "days": ["Tuesday"],
-            "start_time": "19:00",
-            "end_time": "20:00"
+            "start_time": "17:00",
+            "end_time": "18:00"
         },
-        "max_participants": 15,
+        "max_participants": 25,
         "participants": []
     }
 }
@@ -197,4 +197,3 @@ initial_teachers = [
         "role": "admin"
     }
 ]
-
