@@ -33,6 +33,7 @@ document.addEventListener("DOMContentLoaded", () => {
     community: { label: "Community", color: "#fff3e0", textColor: "#e65100" },
     technology: { label: "Technology", color: "#e8eaf6", textColor: "#3949ab" },
   };
+  const schoolName = "Mergington High School";
 
   // State for activities and filters
   let allActivities = {};
@@ -476,7 +477,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const shareUrl = `${window.location.origin}${window.location.pathname}?activity=${encodeURIComponent(
       activityName
     )}`;
-    const shareMessage = `Check out "${activityName}" at Mergington High School. ${details.description}`;
+    const shareMessage = `Check out "${activityName}" at ${schoolName}. ${details.description}`;
     return { shareUrl, shareMessage };
   }
 
@@ -492,10 +493,13 @@ document.addEventListener("DOMContentLoaded", () => {
   async function copyShareText(shareText) {
     try {
       await navigator.clipboard.writeText(shareText);
-      showMessage("Share text copied. Paste it to share with friends.", "success");
+      showMessage("Link copied! You can now paste it anywhere to share.", "success");
     } catch (error) {
       console.error("Failed to copy share text:", error);
-      showMessage("Could not copy share text. Please try again.", "error");
+      showMessage(
+        "Could not copy the link. Please select and copy it manually.",
+        "error"
+      );
     }
   }
 
