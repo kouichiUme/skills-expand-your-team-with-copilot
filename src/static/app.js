@@ -33,7 +33,9 @@ document.addEventListener("DOMContentLoaded", () => {
     community: { label: "Community", color: "#fff3e0", textColor: "#e65100" },
     technology: { label: "Technology", color: "#e8eaf6", textColor: "#3949ab" },
   };
-  const schoolName = "Mergington High School";
+  const schoolName =
+    document.querySelector("header h1")?.textContent?.trim() ||
+    "Mergington High School";
 
   // State for activities and filters
   let allActivities = {};
@@ -475,10 +477,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function buildShareData(activityName, details) {
     const maxDescriptionLength = 120;
-    const shortDescription =
-      details.description.length > maxDescriptionLength
-        ? `${details.description.slice(0, maxDescriptionLength).trim()}...`
-        : details.description;
+    const shortDescription = details.description.length > maxDescriptionLength
+      ? `${details.description
+          .slice(0, maxDescriptionLength)
+          .trim()
+          .replace(/\s+\S*$/, "")}...`
+      : details.description;
     const shareUrl = `${window.location.origin}${window.location.pathname}?activity=${encodeURIComponent(
       activityName
     )}`;
@@ -498,7 +502,7 @@ document.addEventListener("DOMContentLoaded", () => {
   async function copyShareText(shareText) {
     try {
       await navigator.clipboard.writeText(shareText);
-      showMessage("Link copied! Paste it to share with others.", "success");
+      showMessage("Link copied!", "success");
     } catch (error) {
       console.error("Failed to copy share text:", error);
       showMessage(
