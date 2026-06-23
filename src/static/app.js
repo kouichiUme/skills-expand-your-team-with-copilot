@@ -17,6 +17,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Authentication elements
   const loginButton = document.getElementById("login-button");
+  const themeToggleButton = document.getElementById("theme-toggle");
+  const themeIcon = themeToggleButton.querySelector(".theme-icon");
+  const themeText = themeToggleButton.querySelector(".theme-text");
   const userInfo = document.getElementById("user-info");
   const displayName = document.getElementById("display-name");
   const logoutButton = document.getElementById("logout-button");
@@ -47,6 +50,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Authentication state
   let currentUser = null;
+  const THEME_STORAGE_KEY = "themePreference";
 
   // Time range mappings for the dropdown
   const timeRanges = {
@@ -80,6 +84,23 @@ document.addEventListener("DOMContentLoaded", () => {
         btn.classList.add("active");
       } else {
         btn.classList.remove("active");
+      }
+
+      function applyTheme(theme) {
+        const isDarkMode = theme === "dark";
+        document.body.classList.toggle("dark-mode", isDarkMode);
+        themeIcon.textContent = isDarkMode ? "☀️" : "🌙";
+        themeText.textContent = isDarkMode ? "Light mode" : "Dark mode";
+        themeToggleButton.setAttribute(
+          "aria-label",
+          isDarkMode ? "Switch to light mode" : "Switch to dark mode"
+        );
+      }
+
+      function initializeTheme() {
+        const savedTheme = localStorage.getItem(THEME_STORAGE_KEY);
+        const initialTheme = savedTheme === "dark" ? "dark" : "light";
+        applyTheme(initialTheme);
       }
     });
 
@@ -240,6 +261,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Event listeners for authentication
   loginButton.addEventListener("click", openLoginModal);
+  themeToggleButton.addEventListener("click", () => {
+    const isDarkMode = document.body.classList.contains("dark-mode");
+    const nextTheme = isDarkMode ? "light" : "dark";
+    localStorage.setItem(THEME_STORAGE_KEY, nextTheme);
+    applyTheme(nextTheme);
+  });
   logoutButton.addEventListener("click", logout);
   closeLoginModal.addEventListener("click", closeLoginModalHandler);
 
@@ -950,6 +977,7 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   // Initialize app
+  initializeTheme();
   checkAuthentication();
   initializeFilters();
   fetchActivities();
