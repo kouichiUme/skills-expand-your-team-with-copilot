@@ -12,6 +12,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const searchInput = document.getElementById("activity-search");
   const searchButton = document.getElementById("search-button");
   const categoryFilters = document.querySelectorAll(".category-filter");
+  const difficultyFilters = document.querySelectorAll(".difficulty-filter");
   const dayFilters = document.querySelectorAll(".day-filter");
   const timeFilters = document.querySelectorAll(".time-filter");
 
@@ -43,6 +44,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // State for activities and filters
   let allActivities = {};
   let currentFilter = "all";
+  let currentDifficulty = "";
   let searchQuery = "";
   let currentDay = "";
   let currentTimeRange = "";
@@ -70,6 +72,14 @@ document.addEventListener("DOMContentLoaded", () => {
     const activeTimeFilter = document.querySelector(".time-filter.active");
     if (activeTimeFilter) {
       currentTimeRange = activeTimeFilter.dataset.time;
+    }
+
+    // Initialize difficulty filter
+    const activeDifficultyFilter = document.querySelector(
+      ".difficulty-filter.active"
+    );
+    if (activeDifficultyFilter) {
+      currentDifficulty = activeDifficultyFilter.dataset.difficulty;
     }
   }
 
@@ -478,11 +488,24 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       }
 
+      // Apply difficulty filter
+      const difficultyLevel = details.difficulty_level || "";
+      const passesDifficultyFilter =
+        !currentDifficulty ||
+        (currentDifficulty === "unspecified"
+          ? !difficultyLevel
+          : difficultyLevel === currentDifficulty);
+
+      if (!passesDifficultyFilter) {
+        return;
+      }
+
       // Apply search filter
       const searchableContent = [
         name.toLowerCase(),
         details.description.toLowerCase(),
         formatSchedule(details).toLowerCase(),
+        (details.difficulty_level || "").toLowerCase(),
       ].join(" ");
 
       if (
@@ -638,6 +661,10 @@ document.addEventListener("DOMContentLoaded", () => {
       </div>
     `;
 
+    const difficultyInfo = details.difficulty_level
+      ? `<p><strong>Difficulty:</strong> ${details.difficulty_level}</p>`
+      : "";
+
     activityCard.innerHTML = `
       ${tagHtml}
       <h4>${name}</h4>
@@ -646,6 +673,7 @@ document.addEventListener("DOMContentLoaded", () => {
         <strong>Schedule:</strong> ${formattedSchedule}
         <span class="tooltip-text">Regular meetings at this time throughout the semester</span>
       </p>
+      ${difficultyInfo}
       ${capacityIndicator}
       <div class="share-section">
         <p class="share-label">Share with friends:</p>
@@ -750,6 +778,19 @@ document.addEventListener("DOMContentLoaded", () => {
       // Update current day filter and fetch activities
       currentDay = button.dataset.day;
       fetchActivities();
+    });
+  });
+
+  // Add event listeners for difficulty filter buttons
+  difficultyFilters.forEach((button) => {
+    button.addEventListener("click", () => {
+      // Update active class
+      difficultyFilters.forEach((btn) => btn.classList.remove("active"));
+      button.classList.add("active");
+
+      // Update current difficulty filter and display filtered activities
+      currentDifficulty = button.dataset.difficulty;
+      displayFilteredActivities();
     });
   });
 
