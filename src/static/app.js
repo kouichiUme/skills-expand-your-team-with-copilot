@@ -452,15 +452,14 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       // Apply difficulty filter
-      if (currentDifficulty === "unspecified" && details.difficulty_level) {
-        return;
-      }
+      const difficultyLevel = details.difficulty_level || "";
+      const passesDifficultyFilter =
+        !currentDifficulty ||
+        (currentDifficulty === "unspecified"
+          ? !difficultyLevel
+          : difficultyLevel === currentDifficulty);
 
-      if (
-        currentDifficulty &&
-        currentDifficulty !== "unspecified" &&
-        details.difficulty_level !== currentDifficulty
-      ) {
+      if (!passesDifficultyFilter) {
         return;
       }
 
