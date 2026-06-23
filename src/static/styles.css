@@ -5,6 +5,7 @@
   --primary-light: #534bae;
   --primary-dark: #000051;
   --primary-text: #ffffff;
+  --button-text: #ffffff;
 
   /* Secondary colors */
   --secondary: #ff6f00;
@@ -269,7 +270,7 @@ section h3 {
   font-size: 0.72rem;
   border-radius: 12px;
   border: 1px solid transparent;
-  color: #ffffff;
+  color: var(--button-text);
 }
 
 .share-whatsapp {

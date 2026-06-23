@@ -33,9 +33,10 @@ document.addEventListener("DOMContentLoaded", () => {
     community: { label: "Community", color: "#fff3e0", textColor: "#e65100" },
     technology: { label: "Technology", color: "#e8eaf6", textColor: "#3949ab" },
   };
+  const defaultSchoolName = "Mergington High School";
   const schoolName =
     document.querySelector("header h1")?.textContent?.trim() ||
-    "Mergington High School";
+    defaultSchoolName;
 
   // State for activities and filters
   let allActivities = {};
@@ -475,16 +476,22 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  function truncateAtWordBoundary(text, maxLength) {
+    if (text.length <= maxLength) {
+      return text;
+    }
+
+    return `${text.slice(0, maxLength).trim().replace(/\s+\S*$/, "")}...`;
+  }
+
   function buildShareData(activityName, details) {
     const description =
       typeof details.description === "string" ? details.description : "";
     const maxDescriptionLength = 120;
-    const shortDescription = description.length > maxDescriptionLength
-      ? `${description
-          .slice(0, maxDescriptionLength)
-          .trim()
-          .replace(/\s+\S*$/, "")}...`
-      : description;
+    const shortDescription = truncateAtWordBoundary(
+      description,
+      maxDescriptionLength
+    );
     const currentUrl = new URL(window.location.href);
     currentUrl.searchParams.set("activity", activityName);
     const shareUrl = currentUrl.toString();
