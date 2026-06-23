@@ -17,6 +17,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Authentication elements
   const loginButton = document.getElementById("login-button");
+  const themeToggleButton = document.getElementById("theme-toggle");
+  const hasThemeToggleButton = Boolean(themeToggleButton);
   const userInfo = document.getElementById("user-info");
   const displayName = document.getElementById("display-name");
   const logoutButton = document.getElementById("logout-button");
@@ -47,6 +49,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Authentication state
   let currentUser = null;
+  const THEME_STORAGE_KEY = "themePreference";
 
   // Time range mappings for the dropdown
   const timeRanges = {
@@ -84,6 +87,32 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     fetchActivities();
+  }
+
+  function applyTheme(theme) {
+    const isDarkMode = theme === "dark";
+    document.body.classList.toggle("dark-mode", isDarkMode);
+    if (hasThemeToggleButton) {
+      const themeIcon = themeToggleButton.querySelector(".theme-icon");
+      const themeText = themeToggleButton.querySelector(".theme-text");
+      if (themeIcon) {
+        themeIcon.textContent = isDarkMode ? "☀️" : "🌙";
+      }
+      if (themeText) {
+        themeText.textContent = isDarkMode ? "Light mode" : "Dark mode";
+      }
+      themeToggleButton.setAttribute(
+        "aria-label",
+        isDarkMode ? "Switch to light mode" : "Switch to dark mode"
+      );
+    }
+  }
+
+  function initializeTheme() {
+    const savedTheme = localStorage.getItem(THEME_STORAGE_KEY);
+    const initialTheme =
+      savedTheme === "dark" || savedTheme === "light" ? savedTheme : "light";
+    applyTheme(initialTheme);
   }
 
   // Function to set time range filter
@@ -240,6 +269,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Event listeners for authentication
   loginButton.addEventListener("click", openLoginModal);
+  if (hasThemeToggleButton) {
+    themeToggleButton.addEventListener("click", () => {
+      const isDarkMode = document.body.classList.contains("dark-mode");
+      const nextTheme = isDarkMode ? "light" : "dark";
+      localStorage.setItem(THEME_STORAGE_KEY, nextTheme);
+      applyTheme(nextTheme);
+    });
+  }
   logoutButton.addEventListener("click", logout);
   closeLoginModal.addEventListener("click", closeLoginModalHandler);
 
@@ -950,6 +987,7 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   // Initialize app
+  initializeTheme();
   checkAuthentication();
   initializeFilters();
   fetchActivities();
