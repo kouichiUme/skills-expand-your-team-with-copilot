@@ -33,6 +33,10 @@ document.addEventListener("DOMContentLoaded", () => {
     community: { label: "Community", color: "#fff3e0", textColor: "#e65100" },
     technology: { label: "Technology", color: "#e8eaf6", textColor: "#3949ab" },
   };
+  const defaultSchoolName = "Mergington High School";
+  const schoolName =
+    document.querySelector("header h1")?.textContent?.trim() ||
+    defaultSchoolName;
 
   // State for activities and filters
   let allActivities = {};
@@ -472,6 +476,84 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  function truncateAtWordBoundary(text, maxLength) {
+    if (text.length <= maxLength) {
+      return text;
+    }
+
+    return `${text.slice(0, maxLength).trim().replace(/\s+\S*$/, "")}...`;
+  }
+
+  function buildShareData(activityName, details) {
+    const description =
+      typeof details.description === "string" ? details.description : "";
+    const maxDescriptionLength = 120;
+    const shortDescription = truncateAtWordBoundary(
+      description,
+      maxDescriptionLength
+    );
+    const currentUrl = new URL(window.location.href);
+    currentUrl.searchParams.set("activity", activityName);
+    const shareUrl = currentUrl.toString();
+    const shareMessage = `Check out "${activityName}" at ${schoolName}. ${shortDescription}`;
+    return { shareUrl, shareMessage };
+  }
+
+  function createShareButton(label, className, clickHandler) {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = `share-button ${className}`;
+    button.textContent = label;
+    button.addEventListener("click", clickHandler);
+    return button;
+  }
+
+  async function copyShareText(shareText) {
+    try {
+      await navigator.clipboard.writeText(shareText);
+      showMessage("Copied to clipboard!", "success");
+    } catch (error) {
+      console.error("Failed to copy share text:", error);
+      showMessage(
+        "Could not copy the link. Please select and copy it manually.",
+        "error"
+      );
+    }
+  }
+
+  function addShareButtons(activityCard, activityName, details) {
+    const shareActions = activityCard.querySelector(".share-actions");
+    if (!shareActions) return;
+
+    const { shareUrl, shareMessage } = buildShareData(activityName, details);
+    const fullShareText = `${shareMessage} ${shareUrl}`;
+    const encodedShareText = encodeURIComponent(fullShareText);
+    const encodedShareMessage = encodeURIComponent(shareMessage);
+    const encodedShareUrl = encodeURIComponent(shareUrl);
+
+    const whatsappButton = createShareButton("WhatsApp", "share-whatsapp", () => {
+      window.open(
+        `https://wa.me/?text=${encodedShareText}`,
+        "_blank",
+        "noopener,noreferrer"
+      );
+    });
+
+    const xButton = createShareButton("X", "share-x", () => {
+      window.open(
+        `https://twitter.com/intent/tweet?text=${encodedShareMessage}&url=${encodedShareUrl}`,
+        "_blank",
+        "noopener,noreferrer"
+      );
+    });
+
+    const copyButton = createShareButton("Copy Link", "share-copy", () => {
+      copyShareText(fullShareText);
+    });
+
+    shareActions.append(whatsappButton, xButton, copyButton);
+  }
+
   // Function to render a single activity card
   function renderActivityCard(name, details) {
     const activityCard = document.createElement("div");
@@ -528,6 +610,10 @@ document.addEventListener("DOMContentLoaded", () => {
         <span class="tooltip-text">Regular meetings at this time throughout the semester</span>
       </p>
       ${capacityIndicator}
+      <div class="share-section">
+        <p class="share-label">Share with friends:</p>
+        <div class="share-actions"></div>
+      </div>
       <div class="participants-list">
         <h5>Current Participants:</h5>
         <ul>
@@ -576,6 +662,8 @@ document.addEventListener("DOMContentLoaded", () => {
     deleteButtons.forEach((button) => {
       button.addEventListener("click", handleUnregister);
     });
+
+    addShareButtons(activityCard, name, details);
 
     // Add click handler for register button (only when authenticated)
     if (currentUser) {
