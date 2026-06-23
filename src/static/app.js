@@ -474,10 +474,15 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function buildShareData(activityName, details) {
+    const maxDescriptionLength = 120;
+    const shortDescription =
+      details.description.length > maxDescriptionLength
+        ? `${details.description.slice(0, maxDescriptionLength).trim()}...`
+        : details.description;
     const shareUrl = `${window.location.origin}${window.location.pathname}?activity=${encodeURIComponent(
       activityName
     )}`;
-    const shareMessage = `Check out "${activityName}" at ${schoolName}. ${details.description}`;
+    const shareMessage = `Check out "${activityName}" at ${schoolName}. ${shortDescription}`;
     return { shareUrl, shareMessage };
   }
 
@@ -493,7 +498,7 @@ document.addEventListener("DOMContentLoaded", () => {
   async function copyShareText(shareText) {
     try {
       await navigator.clipboard.writeText(shareText);
-      showMessage("Link copied! You can now paste it anywhere to share.", "success");
+      showMessage("Link copied! Paste it to share with others.", "success");
     } catch (error) {
       console.error("Failed to copy share text:", error);
       showMessage(
