@@ -281,7 +281,7 @@ section h3 {
 }
 
 .share-copy {
-  background-color: var(--primary-light);
+  background-color: var(--primary-dark);
 }
 
 .share-button:hover {
