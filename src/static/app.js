@@ -472,6 +472,66 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  function buildShareData(activityName, details) {
+    const shareUrl = `${window.location.origin}${window.location.pathname}?activity=${encodeURIComponent(
+      activityName
+    )}`;
+    const shareMessage = `Check out "${activityName}" at Mergington High School. ${details.description}`;
+    return { shareUrl, shareMessage };
+  }
+
+  function createShareButton(label, className, clickHandler) {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = `share-button ${className}`;
+    button.textContent = label;
+    button.addEventListener("click", clickHandler);
+    return button;
+  }
+
+  async function copyShareText(shareText) {
+    try {
+      await navigator.clipboard.writeText(shareText);
+      showMessage("Share text copied. Paste it to share with friends.", "success");
+    } catch (error) {
+      console.error("Failed to copy share text:", error);
+      showMessage("Could not copy share text. Please try again.", "error");
+    }
+  }
+
+  function addShareButtons(activityCard, activityName, details) {
+    const shareActions = activityCard.querySelector(".share-actions");
+    if (!shareActions) return;
+
+    const { shareUrl, shareMessage } = buildShareData(activityName, details);
+    const fullShareText = `${shareMessage} ${shareUrl}`;
+    const encodedShareText = encodeURIComponent(fullShareText);
+    const encodedShareMessage = encodeURIComponent(shareMessage);
+    const encodedShareUrl = encodeURIComponent(shareUrl);
+
+    const whatsappButton = createShareButton("WhatsApp", "share-whatsapp", () => {
+      window.open(
+        `https://wa.me/?text=${encodedShareText}`,
+        "_blank",
+        "noopener,noreferrer"
+      );
+    });
+
+    const xButton = createShareButton("X", "share-x", () => {
+      window.open(
+        `https://twitter.com/intent/tweet?text=${encodedShareMessage}&url=${encodedShareUrl}`,
+        "_blank",
+        "noopener,noreferrer"
+      );
+    });
+
+    const copyButton = createShareButton("Copy Link", "share-copy", () => {
+      copyShareText(fullShareText);
+    });
+
+    shareActions.append(whatsappButton, xButton, copyButton);
+  }
+
   // Function to render a single activity card
   function renderActivityCard(name, details) {
     const activityCard = document.createElement("div");
@@ -528,6 +588,10 @@ document.addEventListener("DOMContentLoaded", () => {
         <span class="tooltip-text">Regular meetings at this time throughout the semester</span>
       </p>
       ${capacityIndicator}
+      <div class="share-section">
+        <p class="share-label">Share with friends:</p>
+        <div class="share-actions"></div>
+      </div>
       <div class="participants-list">
         <h5>Current Participants:</h5>
         <ul>
@@ -576,6 +640,8 @@ document.addEventListener("DOMContentLoaded", () => {
     deleteButtons.forEach((button) => {
       button.addEventListener("click", handleUnregister);
     });
+
+    addShareButtons(activityCard, name, details);
 
     // Add click handler for register button (only when authenticated)
     if (currentUser) {

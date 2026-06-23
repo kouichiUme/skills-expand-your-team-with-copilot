@@ -245,6 +245,48 @@ section h3 {
   border-top: 1px solid var(--border-light);
 }
 
+.share-section {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border-light);
+}
+
+.share-label {
+  margin-bottom: 6px;
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.share-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.share-button {
+  padding: 4px 8px;
+  font-size: 0.72rem;
+  border-radius: 12px;
+  border: 1px solid transparent;
+}
+
+.share-whatsapp {
+  background-color: #25d366;
+}
+
+.share-x {
+  background-color: #1f1f1f;
+}
+
+.share-copy {
+  background-color: var(--primary-light);
+}
+
+.share-button:hover {
+  opacity: 0.9;
+}
+
 .participants-list h5 {
   color: var(--primary);
   margin-bottom: 5px;
